@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Client Direct Upload</title>
+  <script src="https://cdn.bootcss.com/axios/0.17.1/axios.min.js"></script>
+</head>
+<body>
+
+<div id="uploadForm">
+  <input id="file" type="file"/>
+  <button id="upload" type="button" onclick="upload">upload</button>
+</div>
+<img id="image" src="" alt="">
+
+<script>
+	let imgUrl = ''
+	document.getElementById('upload').addEventListener('click', function () {
+		axios({
+			url: 'http://localhost:3000/signature',
+			params: {
+				fileName: document.getElementById('file').files[0].name
+			}
+		})
+			.then(res => {
+				let data = res.data
+				console.log(data)
+				let formData = new FormData()
+				imgUrl = `${data.uploadAddress}/${data.key}`
+				formData.append('key', data.key)
+				formData.append('policy', data.policy)
+				formData.append('OSSAccessKeyId', data.accessKeyId)
+				formData.append('signature', data.signature)
+				formData.append('file', document.getElementById('file').files[0])
+				return axios.post(
+					data.uploadAddress,
+					formData
+				)
+			})
+			.then(res => {
+				console.log(res)
+				document.getElementById('image').src = imgUrl
+			})
+			.catch(e => {
+				console.error(e.response.data)
+			})
+	})
+</script>
+</body>
+</html>
