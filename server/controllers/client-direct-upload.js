@@ -9,7 +9,7 @@ exports.getSignature = async (ctx, next) => {
 	let callbackObj = {
 		callbackUrl: 'https://voidis.com/upload-callback',
 		callbackHost: 'voidis.com',
-		callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}',
+		callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}&token=${x:token}',
 		callbackBodyType:"application/x-www-form-urlencoded"
 	}
 	let callbackBase64 = new Buffer(JSON.stringify(callbackObj)).toString('base64')
