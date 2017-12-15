@@ -10,7 +10,8 @@ exports.getSignature = async (ctx, next) => {
 		// callbackUrl: 'http://voidis.com/upload-callback',
 		// callbackHost: 'voidis.com',
 		// callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}',
-		callbackUrl: 'http://182.92.6.8:2017/upload-callback',
+		callbackUrl: '182.92.6.8:2017/upload-callback',
+		callbackHost: '182.92.6.8',
 		callbackBody: 'a=b',
 		callbackBodyType:"application/x-www-form-urlencoded"
 	}
