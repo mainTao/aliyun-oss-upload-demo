@@ -7,9 +7,11 @@ exports.getSignature = async (ctx, next) => {
 	let key = `album/${ctx.query.fileName}`
 	let expire = new Date(Date.now() + 60 * 1000) // 默认上传时间 1 分钟过期
 	let callbackObj = {
-		callbackUrl: 'http://voidis.com/upload-callback',
-		callbackHost: 'voidis.com',
-		callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}',
+		// callbackUrl: 'http://voidis.com/upload-callback',
+		// callbackHost: 'voidis.com',
+		// callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}',
+		callbackUrl: 'http://182.92.6.8:2017/upload-callback',
+		callbackBody: 'a=b',
 		callbackBodyType:"application/x-www-form-urlencoded"
 	}
 	let callbackBase64 = new Buffer(JSON.stringify(callbackObj)).toString('base64')

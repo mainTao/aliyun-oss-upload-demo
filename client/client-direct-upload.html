@@ -36,7 +36,12 @@
 				formData.append('callback', data.callback)
 				return axios.post(
 					data.uploadAddress,
-					formData
+					formData,
+          {
+						headers: {
+							'x-oss-callback': data.callback
+						}
+          }
 				)
 			})
 			.then(res => {
