@@ -7,7 +7,7 @@ exports.getSignature = async (ctx, next) => {
 	let key = `album/${ctx.query.fileName}`
 	let expire = new Date(Date.now() + 60 * 1000) // 默认上传时间 1 分钟过期
 	let callbackObj = {
-		callbackUrl: 'http://voidis.com/upload-callback',
+		callbackUrl: 'https://voidis.com/upload-callback',
 		callbackHost: 'voidis.com',
 		callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}',
 		callbackBodyType:"application/x-www-form-urlencoded"
@@ -17,7 +17,6 @@ exports.getSignature = async (ctx, next) => {
 	let policy = {
 		expiration: expire.toISOString(),
 		conditions: [
-			{callback: callbackBase64},
 			["content-length-range", 0, 1024 * 1024 * 5], // 默认 5M
 			{bucket: config.bucket.name},
 			['eq', '$key', key],
