@@ -16,6 +16,7 @@ exports.getSignature = async (ctx, next) => {
 		callbackBodyType:"application/x-www-form-urlencoded"
 	}
 	let callbackBase64 = new Buffer(JSON.stringify(callbackObj)).toString('base64')
+	callbackBase64 = 'eyJjYWxsYmFja1VybCI6IjEwLjEwMS4xNjYuMzA6ODA4My9jYWxsYmFjay5waHAiLCJjYWxsYmFja0hvc3QiOiIxMC4xMDEuMTY2LjMwIiwiY2FsbGJhY2tCb2R5IjoiZmlsZW5hbWU9JChmaWxlbmFtZSkmdGFibGU9JHt4OnRhYmxlfSIsImNhbGxiYWNrQm9keVR5cGUiOiJhcHBsaWNhdGlvbi94LXd3dy1mb3JtLXVybGVuY29kZWQifQ=='
 
 	let policy = {
 		expiration: expire.toISOString(),
