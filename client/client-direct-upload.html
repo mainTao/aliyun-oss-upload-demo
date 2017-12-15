@@ -17,7 +17,8 @@
 	let imgUrl = ''
 	document.getElementById('upload').addEventListener('click', function () {
 		axios({
-			url: 'http://localhost:3000/signature',
+			// url: 'http://localhost:3000/signature',
+			url: 'http://voidis.com/signature',
 			params: {
 				fileName: document.getElementById('file').files[0].name
 			}
@@ -32,6 +33,7 @@
 				formData.append('OSSAccessKeyId', data.accessKeyId)
 				formData.append('signature', data.signature)
 				formData.append('file', document.getElementById('file').files[0])
+				formData.append('callback', data.callback)
 				return axios.post(
 					data.uploadAddress,
 					formData
