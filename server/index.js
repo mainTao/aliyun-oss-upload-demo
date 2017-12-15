@@ -6,7 +6,7 @@ const router = new Router()
 const clientDirectUploadController = require('./controllers/client-direct-upload')
 
 const app = new Koa()
-const port = 3000
+const port = 2017
 
 app.use(async (ctx, next) => {
 	try{
@@ -21,6 +21,7 @@ app.use(cors({ credentials: true }))
 app.use(bodyParser())
 
 router.get('/signature', clientDirectUploadController.getSignature)
+router.post('/upload-callback', clientDirectUploadController.uploadCallback)
 
 app.use(router.routes())
 

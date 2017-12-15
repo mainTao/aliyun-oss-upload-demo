@@ -20,12 +20,24 @@ exports.getSignature = async (ctx, next) => {
   hmac.update(policyBase64)
   const signature = hmac.digest('base64')
 
+	let callbackObj = {
+  	callbackUrl: 'http://voidis.com/upload-callback',
+		callbackBody: ''
+	}
+	let callbackBase64 = new Buffer(JSON.stringify(callbackObj)).toString('base64')
+
   ctx.body = {
 		accessKeyId,
 		key,
 		policy: policyBase64,
 		signature,
-		uploadAddress: config.bucket.externalUrl
+		uploadAddress: config.bucket.externalUrl,
+		callback: callbackBase64
   }
 
+}
+
+exports.uploadCallback = async ctx => {
+	console.log(ctx.request.body)
+	ctx.body = ''
 }
