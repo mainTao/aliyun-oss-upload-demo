@@ -18,7 +18,7 @@ exports.getSignature = async (ctx, next) => {
 			["content-length-range", 0, 1024 * 1024 * 5], // 默认 5M
 			{bucket: config.bucket.name},
 			['eq', '$key', key],
-			{callback: callbackBase64}
+			// {callback: callbackBase64}
 		]
 	}
 
