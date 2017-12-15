@@ -6,12 +6,19 @@ exports.getSignature = async (ctx, next) => {
 
 	let key = `album/${ctx.query.fileName}`
 	let expire = new Date(Date.now() + 60 * 1000) // 默认上传时间 1 分钟过期
+	let callbackObj = {
+		callbackUrl: 'http://voidis.com/upload-callback',
+		callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}'
+	}
+	let callbackBase64 = new Buffer(JSON.stringify(callbackObj)).toString('base64')
+
 	let policy = {
 		expiration: expire.toISOString(),
 		conditions: [
 			["content-length-range", 0, 1024 * 1024 * 5], // 默认 5M
 			{bucket: config.bucket.name},
-			['eq', '$key', key]
+			['eq', '$key', key],
+			{callback: callbackBase64}
 		]
 	}
 
@@ -20,11 +27,6 @@ exports.getSignature = async (ctx, next) => {
   hmac.update(policyBase64)
   const signature = hmac.digest('base64')
 
-	let callbackObj = {
-  	callbackUrl: 'http://voidis.com/upload-callback',
-		callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}'
-	}
-	let callbackBase64 = new Buffer(JSON.stringify(callbackObj)).toString('base64')
 
   ctx.body = {
 		accessKeyId,
