@@ -6,7 +6,7 @@ const router = new Router()
 const clientDirectUploadController = require('./controllers/client-direct-upload')
 
 const app = new Koa()
-const port = 2017
+const port = 2018
 
 app.use(async (ctx, next) => {
 	try{
