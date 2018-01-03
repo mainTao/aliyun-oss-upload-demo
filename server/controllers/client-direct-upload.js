@@ -1,5 +1,8 @@
 const config = require('../../myConfig')
 const crypto = require('crypto')
+const querystring = require('querystring')
+
+let ossPublicKey = null
 
 exports.getSignature = async (ctx, next) => {
   const {accessKeyId, accessKeySecret} = config
@@ -7,10 +10,12 @@ exports.getSignature = async (ctx, next) => {
 	let key = `album/${ctx.query.fileName}`
 	let expire = new Date(Date.now() + 60 * 1000) // 默认上传时间 1 分钟过期
 	let callbackObj = {
-		callbackUrl: 'https://voidis.com/upload-callback',
-		callbackHost: 'voidis.com',
-		callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}&token=${x:token}',
-		callbackBodyType:"application/x-www-form-urlencoded"
+		// callbackUrl: 'https://voidis.com/upload-callback',
+		callbackUrl: 'http://api.voidis.com',
+		// callbackHost: 'api.voidis.com',
+		// callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}&sign=${x:signature}',
+		callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&acl=${x:acl}',
+		callbackBodyType:'application/x-www-form-urlencoded'
 	}
 	let callbackBase64 = new Buffer(JSON.stringify(callbackObj)).toString('base64')
 
@@ -24,10 +29,7 @@ exports.getSignature = async (ctx, next) => {
 	}
 
   const policyBase64 = new Buffer(JSON.stringify(policy)).toString('base64')
-  const hmac = crypto.createHmac('sha1', accessKeySecret)
-  hmac.update(policyBase64)
-  const signature = hmac.digest('base64')
-
+  const signature = crypto.createHmac('sha1', accessKeySecret).update(policyBase64).digest('base64')
 
   ctx.body = {
 		accessKeyId,
@@ -41,6 +43,16 @@ exports.getSignature = async (ctx, next) => {
 }
 
 exports.uploadCallback = async ctx => {
-	console.log(ctx.request.body)
-	ctx.body = {a:1}
+	console.log(ctx.headers)
+	console.log(JSON.stringify(ctx.request.body))
+
+	let stringToSign = ctx.path + ctx.request.search + '\n' + querystring.stringify(ctx.request.body)
+	let publicKey = `-----BEGIN PUBLIC KEY-----
+MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKs/JBGzwUB2aVht4crBx3oIPBLNsjGs
+C0fTXv+nvlmklvkcolvpvXLTjaxUHR3W9LXxQ2EHXAJfCB+6H2YF1k8CAwEAAQ==
+-----END PUBLIC KEY-----`
+	let isValid = crypto.createVerify('RSA-MD5').update(stringToSign).verify(publicKey, ctx.headers.authorization, 'base64')
+	console.log(isValid)
+	ctx.body = {isValid: isValid}
 }
+
