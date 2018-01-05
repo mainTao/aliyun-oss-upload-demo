@@ -17,9 +17,9 @@
 	let imgUrl = ''
 	document.getElementById('upload').addEventListener('click', function () {
 		axios({
-			url: 'http://localhost:2018/signature',
+			// url: 'http://localhost:2018/signature',
 			// url: 'https://album.voidis.com/signature',
-			// url: 'https://voidis.com/signature',
+			url: 'http://voidis.com/signature',
 			params: {
 				fileName: document.getElementById('file').files[0].name
 			}
