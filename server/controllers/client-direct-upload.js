@@ -37,7 +37,7 @@ exports.getSignature = async (ctx, next) => {
 		policy: policyBase64,
 		signature,
 		uploadAddress: config.bucket.externalUrl,
-		acl: 'private', // public-read, private
+		acl: 'public-read', // public-read, private
 		callback: callbackBase64
   }
 
