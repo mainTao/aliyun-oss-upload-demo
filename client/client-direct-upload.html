@@ -34,9 +34,8 @@
 				formData.append('OSSAccessKeyId', data.accessKeyId)
 				formData.append('signature', data.signature)
 				formData.append('callback', data.callback)
-				// formData.append('x:token', 'token-value')
-				// formData.append('x-oss-object-acl', 'private')
-				// formData.append('x-oss-object-acl', 'public-read')
+				formData.append('x:acl', data.acl)
+				formData.append('x-oss-object-acl', data.acl)
 				formData.append('file', document.getElementById('file').files[0])
 				return axios.post(
 					data.uploadAddress,
