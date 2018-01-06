@@ -60,8 +60,9 @@ exports.uploadCallback = async ctx => {
 	let signature = ctx.headers.authorization
 	let stringToSign = ctx.path + ctx.request.search + '\n' + querystring.stringify(ctx.request.body)
 
-	console.log(publicKey)
 	console.log(stringToSign)
+	console.log(publicKey)
+	console.log(signature)
 	let isValid = crypto.createVerify('RSA-MD5').update(stringToSign).verify(publicKey, signature, 'base64')
 	console.log(isValid)
 	ctx.body = {isValid: isValid}
