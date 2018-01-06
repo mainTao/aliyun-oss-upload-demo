@@ -2,20 +2,17 @@ const config = require('../../myConfig')
 const crypto = require('crypto')
 const querystring = require('querystring')
 
-let ossPublicKey = null
+let ossPublicKeyDict = {}
 
 exports.getSignature = async (ctx, next) => {
-  const {accessKeyId, accessKeySecret} = config
+	const {accessKeyId, accessKeySecret} = config
 
 	let key = `album/${ctx.query.fileName}`
 	let expire = new Date(Date.now() + 60 * 1000) // 默认上传时间 1 分钟过期
 	let callbackObj = {
 		callbackUrl: 'http://voidis.com/upload-callback',
-		// callbackUrl: 'http://api.voidis.com',
-		// callbackHost: 'api.voidis.com',
-		// callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}&sign=${x:signature}',
-		callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&acl=${x:acl}',
-		callbackBodyType:'application/x-www-form-urlencoded'
+		callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}&sign=${x:signature}',
+		callbackBodyType: 'application/x-www-form-urlencoded'
 	}
 	let callbackBase64 = new Buffer(JSON.stringify(callbackObj)).toString('base64')
 
@@ -28,18 +25,17 @@ exports.getSignature = async (ctx, next) => {
 		]
 	}
 
-  const policyBase64 = new Buffer(JSON.stringify(policy)).toString('base64')
-  const signature = crypto.createHmac('sha1', accessKeySecret).update(policyBase64).digest('base64')
+	const policyBase64 = new Buffer(JSON.stringify(policy)).toString('base64')
+	const signature = crypto.createHmac('sha1', accessKeySecret).update(policyBase64).digest('base64')
 
-  ctx.body = {
+	ctx.body = {
 		accessKeyId,
 		key,
 		policy: policyBase64,
 		signature,
 		uploadAddress: config.bucket.externalUrl,
-		acl: 'public-read', // public-read, private
 		callback: callbackBase64
-  }
+	}
 
 }
 
@@ -47,12 +43,28 @@ exports.uploadCallback = async ctx => {
 	console.log(ctx.headers)
 	console.log(JSON.stringify(ctx.request.body))
 
+	let publicKeyUrl = (new Buffer(ctx.headers['x-oss-pub-key-url'], 'base64')).toString()
+	if(!publicKeyUrl.startsWith('http://gosspublic.alicdn.com/')
+		|| !publicKeyUrl.startsWith('https://gosspublic.alicdn.com/')){
+		throw new Error('Invalid publicKeyUrl:' + publicKeyUrl)
+	}
+
+	let publicKey = ossPublicKeyDict[publicKeyUrl]
+	if(!publicKey){
+		let res = await axios({url: publicKeyUrl})
+		if (res.status >= 400) {
+			throw new Error('Fail to get public key from url: ' + publicKeyUrl)
+		}
+		publicKey = res.data
+		ossPublicKeyDict[publicKeyUrl] = publicKey
+
+		console.log('get from url', publicKey)
+	}
+
+	let signature = ctx.headers.authorization
 	let stringToSign = ctx.path + ctx.request.search + '\n' + querystring.stringify(ctx.request.body)
-	let publicKey = `-----BEGIN PUBLIC KEY-----
-MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKs/JBGzwUB2aVht4crBx3oIPBLNsjGs
-C0fTXv+nvlmklvkcolvpvXLTjaxUHR3W9LXxQ2EHXAJfCB+6H2YF1k8CAwEAAQ==
------END PUBLIC KEY-----`
-	let isValid = crypto.createVerify('RSA-MD5').update(stringToSign).verify(publicKey, ctx.headers.authorization, 'base64')
+
+	let isValid = crypto.createVerify('RSA-MD5').update(stringToSign).verify(publicKey, signature, 'base64')
 	console.log(isValid)
 	ctx.body = {isValid: isValid}
 }
