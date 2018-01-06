@@ -56,6 +56,8 @@ exports.uploadCallback = async ctx => {
 		ossPublicKeyDict[publicKeyUrl] = publicKey
 	}
 
+	console.log(publicKey)
+
 	let signature = ctx.headers.authorization
 	let stringToSign = ctx.path + ctx.request.search + '\n' + querystring.stringify(ctx.request.body)
 

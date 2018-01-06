@@ -14,6 +14,7 @@ app.use(async (ctx, next) => {
 	}
 	catch(e){
 		console.error(e)
+		ctx.body = e.message
 	}
 })
 
