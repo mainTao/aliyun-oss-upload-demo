@@ -1,5 +1,6 @@
 const config = require('../../myConfig')
 const crypto = require('crypto')
+const axios = require('axios')
 const querystring = require('querystring')
 
 let ossPublicKeyDict = {}
