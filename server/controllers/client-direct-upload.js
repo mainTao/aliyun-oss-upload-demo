@@ -12,8 +12,8 @@ exports.getSignature = async (ctx, next) => {
 	let expire = new Date(Date.now() + 60 * 1000) // 默认上传时间 1 分钟过期
 	let callbackObj = {
 		callbackUrl: 'http://voidis.com/upload-callback',
-		// callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}&sign=${x:signature}',
-		callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&acl=',
+		callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}&sign=${x:signature}',
+		// callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&acl=',
 		callbackBodyType: 'application/x-www-form-urlencoded'
 	}
 	let callbackBase64 = new Buffer(JSON.stringify(callbackObj)).toString('base64')
@@ -42,6 +42,8 @@ exports.getSignature = async (ctx, next) => {
 }
 
 exports.uploadCallback = async ctx => {
+	console.log(ctx.body)
+	console.log('-------')
 	let publicKeyUrl = (new Buffer(ctx.headers['x-oss-pub-key-url'], 'base64')).toString()
 	if(!publicKeyUrl.match(/^https?:\/\/gosspublic.alicdn.com\//)){
 		throw new Error('Invalid publicKeyUrl:' + publicKeyUrl)
