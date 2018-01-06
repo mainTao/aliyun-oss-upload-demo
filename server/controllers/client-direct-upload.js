@@ -41,12 +41,8 @@ exports.getSignature = async (ctx, next) => {
 }
 
 exports.uploadCallback = async ctx => {
-	console.log(ctx.headers)
-	console.log(JSON.stringify(ctx.request.body))
-
 	let publicKeyUrl = (new Buffer(ctx.headers['x-oss-pub-key-url'], 'base64')).toString()
-	if(!publicKeyUrl.startsWith('http://gosspublic.alicdn.com/')
-		|| !publicKeyUrl.startsWith('https://gosspublic.alicdn.com/')){
+	if(!publicKeyUrl.match(/^https?:\/\/gosspublic.alicdn.com\//)){
 		throw new Error('Invalid publicKeyUrl:' + publicKeyUrl)
 	}
 
@@ -58,8 +54,6 @@ exports.uploadCallback = async ctx => {
 		}
 		publicKey = res.data
 		ossPublicKeyDict[publicKeyUrl] = publicKey
-
-		console.log('get from url', publicKey)
 	}
 
 	let signature = ctx.headers.authorization
@@ -69,4 +63,3 @@ exports.uploadCallback = async ctx => {
 	console.log(isValid)
 	ctx.body = {isValid: isValid}
 }
-
