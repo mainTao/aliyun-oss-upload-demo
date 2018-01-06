@@ -6,13 +6,11 @@ let ossPublicKeyDict = {}
 
 exports.getSignature = async (ctx, next) => {
 	const {accessKeyId, accessKeySecret} = config
-
 	let key = `album/${ctx.query.fileName}`
 	let expire = new Date(Date.now() + 60 * 1000) // 默认上传时间 1 分钟过期
 	let callbackObj = {
 		callbackUrl: 'http://voidis.com/upload-callback',
 		callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&imageInfo.height=${imageInfo.height}&imageInfo.width=${imageInfo.width}&imageInfo.format=${imageInfo.format}&sign=${x:signature}',
-		// callbackBody: 'bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&acl=',
 		callbackBodyType: 'application/x-www-form-urlencoded'
 	}
 	let callbackBase64 = new Buffer(JSON.stringify(callbackObj)).toString('base64')
@@ -41,8 +39,6 @@ exports.getSignature = async (ctx, next) => {
 }
 
 exports.uploadCallback = async ctx => {
-	console.log(ctx.request.rawBody)
-	console.log('-------')
 	let publicKeyUrl = (new Buffer(ctx.headers['x-oss-pub-key-url'], 'base64')).toString()
 	if(!publicKeyUrl.match(/^https?:\/\/gosspublic.alicdn.com\//)){
 		throw new Error('Invalid publicKeyUrl:' + publicKeyUrl)
@@ -61,9 +57,6 @@ exports.uploadCallback = async ctx => {
 	let signature = ctx.headers.authorization
 	let stringToSign = ctx.path + ctx.request.search + '\n' + ctx.request.rawBody
 
-	console.log(stringToSign)
-	console.log(publicKey)
-	console.log(signature)
 	let isValid = crypto.createVerify('RSA-MD5').update(stringToSign).verify(publicKey, signature, 'base64')
 	console.log(isValid)
 	ctx.body = {isValid: isValid}
