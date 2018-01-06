@@ -44,7 +44,11 @@ exports.getSignature = async (ctx, next) => {
 }
 
 exports.uploadCallback = async ctx => {
-	let body = await getRawBody(ctx.req)
+	let body = await getRawBody(ctx.req, {
+		length: ctx.request.length,
+		limit: "1mb",
+		encoding: ctx.request.charset
+	})
 	console.log(body)
 	console.log('-------')
 	let publicKeyUrl = (new Buffer(ctx.headers['x-oss-pub-key-url'], 'base64')).toString()
