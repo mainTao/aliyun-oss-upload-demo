@@ -1,6 +1,8 @@
 const config = require('../../myConfig')
 const crypto = require('crypto')
 const axios = require('axios')
+var getRawBody = require('raw-body')
+
 const querystring = require('querystring')
 
 let ossPublicKeyDict = {}
@@ -42,7 +44,8 @@ exports.getSignature = async (ctx, next) => {
 }
 
 exports.uploadCallback = async ctx => {
-	console.log(ctx.request.body)
+	let body = getRawBody(ctx.req)
+	console.log(body)
 	console.log('-------')
 	let publicKeyUrl = (new Buffer(ctx.headers['x-oss-pub-key-url'], 'base64')).toString()
 	if(!publicKeyUrl.match(/^https?:\/\/gosspublic.alicdn.com\//)){
