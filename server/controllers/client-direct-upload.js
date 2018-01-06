@@ -42,7 +42,7 @@ exports.getSignature = async (ctx, next) => {
 }
 
 exports.uploadCallback = async ctx => {
-	console.log(ctx.body)
+	console.log(ctx.request.body)
 	console.log('-------')
 	let publicKeyUrl = (new Buffer(ctx.headers['x-oss-pub-key-url'], 'base64')).toString()
 	if(!publicKeyUrl.match(/^https?:\/\/gosspublic.alicdn.com\//)){
