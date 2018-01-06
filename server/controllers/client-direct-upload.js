@@ -2,8 +2,6 @@ const config = require('../../myConfig')
 const crypto = require('crypto')
 const axios = require('axios')
 
-const querystring = require('querystring')
-
 let ossPublicKeyDict = {}
 
 exports.getSignature = async (ctx, next) => {
@@ -60,9 +58,8 @@ exports.uploadCallback = async ctx => {
 		ossPublicKeyDict[publicKeyUrl] = publicKey
 	}
 
-
 	let signature = ctx.headers.authorization
-	let stringToSign = ctx.path + ctx.request.search + '\n' + querystring.stringify(ctx.request.body)
+	let stringToSign = ctx.path + ctx.request.search + '\n' + ctx.request.rawBody
 
 	console.log(stringToSign)
 	console.log(publicKey)
