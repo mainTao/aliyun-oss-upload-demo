@@ -34,7 +34,7 @@
 				formData.append('OSSAccessKeyId', data.accessKeyId)
 				formData.append('signature', data.signature)
 				formData.append('callback', data.callback)
-				formData.append('x:myValue', 'anything')
+				formData.append('x:my-value', 'anything')
 				formData.append('file', document.getElementById('file').files[0])
 				return axios.post(
 					data.uploadAddress,
