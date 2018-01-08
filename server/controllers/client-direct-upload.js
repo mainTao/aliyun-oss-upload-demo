@@ -59,10 +59,10 @@ exports.uploadCallback = async ctx => {
 
 	let isValid = crypto.createVerify('RSA-MD5').update(stringToSign).verify(publicKey, signature, 'base64')
 	if(isValid){
-		ctx.status = 400
-		ctx.body = 'invalid'
+		ctx.body = 'valid'
 	}
 	else{
-		ctx.body = 'valid'
+		ctx.status = 400
+		ctx.body = 'invalid'
 	}
 }

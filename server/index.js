@@ -15,7 +15,7 @@ app.use(async (ctx, next) => {
 	counter++
 	try{
 		let requestId = counter
-		console.log(requestId, ctx.method, ctx.url, ctx.headers, ctx.rawBody)
+		console.log(requestId, ctx.method, ctx.url, ctx.headers, ctx.request.rawBody)
 		await next()
 		console.log(requestId, ctx.body)
 	}
